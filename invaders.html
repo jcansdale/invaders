@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background-color: black;
+    }
+  </style>
+  <title>Simple Space Invaders</title>
+</head>
+<body>
+  <canvas id="gameCanvas" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const player = {
+      x: canvas.width / 2,
+      y: canvas.height - 30,
+      width: 30,
+      height: 15,
+      speed: 5,
+    };
+
+    const aliens = [];
+
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 3; j++) {
+        aliens.push({
+          x: 60 + i * 100,
+          y: 40 + j * 50,
+          width: 40,
+          height: 30,
+          alive: true,
+        });
+      }
+    }
+
+    const bullets = [];
+    let alienDirection = 1;
+    let alienSpeed = 1;
+
+    function drawPlayer() {
+      ctx.fillStyle = 'green';
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawAliens() {
+  ctx.fillStyle = 'red';
+  aliens.forEach((alien) => {
+    if (alien.alive) {
+      const centerX = alien.x + alien.width / 2;
+      const centerY = alien.y + alien.height / 2;
+
+      // Draw body
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, alien.width / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw eyes
+      ctx.fillStyle = 'black';
+      ctx.beginPath();
+      ctx.arc(centerX - alien.width / 4, centerY - alien.height / 4, alien.width / 8, 0, Math.PI * 2);
+      ctx.arc(centerX + alien.width / 4, centerY - alien.height / 4, alien.width / 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Restore the fill style for the next alien
+      ctx.fillStyle = 'red';
+    }
+  });
+}
+
+    function drawBullets() {
+      ctx.fillStyle = 'white';
+      bullets.forEach((bullet) => {
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+      });
+    }
+
+    function updateAliens() {
+      let changeDirection = false;
+
+      aliens.forEach((alien) => {
+        if (alien.alive) {
+          alien.x += alienSpeed * alienDirection;
+          if (alien.x + alien.width >= canvas.width || alien.x <= 0) {
+            changeDirection = true;
+          }
+        }
+      });
+
+      if (changeDirection) {
+        alienDirection *= -1;
+        aliens.forEach((alien) => {
+          if (alien.alive) {
+            alien.y += 30;
+            if (alien.y + alien.height >= canvas.height) {
+              resetGame();
+            }
+          }
+        });
+      }
+    }
+
+    function update() {
+      if (player.moveLeft && player.x > 0) {
+        player.x -= player.speed;
+      }
+      if (player.moveRight && player.x < canvas.width - player.width) {
+        player.x += player.speed;
+      }
+
+      bullets.forEach((bullet, i) => {
+        bullet.y -= bullet.speed;
+        if (bullet.y < -bullet.height) {
+          bullets.splice(i, 1);
+        }
+      });
+
+      bullets.forEach((bullet, bulletIndex) => {
+        aliens.forEach((alien, alienIndex) => {
+          if (
+            alien.alive &&
+            bullet.x < alien.x + alien.width &&
+            bullet.x + bullet.width > alien.x &&
+            bullet.y < alien.y + alien.height &&
+            bullet.y + bullet.height > alien.y
+         
+
+            ) {
+alien.alive = false;
+bullets.splice(bulletIndex, 1);
+}
+});
+});
+
+updateAliens();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawPlayer();
+  drawAliens();
+  drawBullets();
+}
+
+function resetGame() {
+  aliens.forEach((alien, i) => {
+    const row = Math.floor(i / 5);
+    const col = i % 5;
+    alien.x = 60 + col * 100;
+    alien.y = 40 + row * 50;
+    alien.alive = true;
+  });
+}
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') {
+    player.moveLeft = true;
+  }
+  if (e.key === 'ArrowRight') {
+    player.moveRight = true;
+  }
+  if (e.key === ' ') {
+    bullets.push({
+      x: player.x + player.width / 2,
+      y: player.y,
+      width: 5,
+      height: 10,
+      speed: 7,
+    });
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'ArrowLeft') {
+    player.moveLeft = false;
+  }
+  if (e.key === 'ArrowRight') {
+    player.moveRight = false;
+  }
+});
+
+gameLoop();
+
+</script>
+</body>
+</html>
