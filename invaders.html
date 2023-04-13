@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
   </style>
   <title>Simple Space Invaders</title>
 </head>
+
 <body>
   <canvas id="gameCanvas" width="640" height="480"></canvas>
   <script>
@@ -50,29 +52,29 @@
     }
 
     function drawAliens() {
-  ctx.fillStyle = 'red';
-  aliens.forEach((alien) => {
-    if (alien.alive) {
-      const centerX = alien.x + alien.width / 2;
-      const centerY = alien.y + alien.height / 2;
-
-      // Draw body
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, alien.width / 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw eyes
-      ctx.fillStyle = 'black';
-      ctx.beginPath();
-      ctx.arc(centerX - alien.width / 4, centerY - alien.height / 4, alien.width / 8, 0, Math.PI * 2);
-      ctx.arc(centerX + alien.width / 4, centerY - alien.height / 4, alien.width / 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Restore the fill style for the next alien
       ctx.fillStyle = 'red';
+      aliens.forEach((alien) => {
+        if (alien.alive) {
+          const centerX = alien.x + alien.width / 2;
+          const centerY = alien.y + alien.height / 2;
+
+          // Draw body
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, alien.width / 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Draw eyes
+          ctx.fillStyle = 'black';
+          ctx.beginPath();
+          ctx.arc(centerX - alien.width / 4, centerY - alien.height / 4, alien.width / 8, 0, Math.PI * 2);
+          ctx.arc(centerX + alien.width / 4, centerY - alien.height / 4, alien.width / 8, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Restore the fill style for the next alien
+          ctx.fillStyle = 'red';
+        }
+      });
     }
-  });
-}
 
     function drawBullets() {
       ctx.fillStyle = 'white';
@@ -129,70 +131,71 @@
             bullet.x + bullet.width > alien.x &&
             bullet.y < alien.y + alien.height &&
             bullet.y + bullet.height > alien.y
-         
 
-            ) {
-alien.alive = false;
-bullets.splice(bulletIndex, 1);
-}
-});
-});
 
-updateAliens();
-}
+          ) {
+            alien.alive = false;
+            bullets.splice(bulletIndex, 1);
+          }
+        });
+      });
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawPlayer();
-  drawAliens();
-  drawBullets();
-}
+      updateAliens();
+    }
 
-function resetGame() {
-  aliens.forEach((alien, i) => {
-    const row = Math.floor(i / 5);
-    const col = i % 5;
-    alien.x = 60 + col * 100;
-    alien.y = 40 + row * 50;
-    alien.alive = true;
-  });
-}
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPlayer();
+      drawAliens();
+      drawBullets();
+    }
 
-function gameLoop() {
-  update();
-  draw();
-  requestAnimationFrame(gameLoop);
-}
+    function resetGame() {
+      aliens.forEach((alien, i) => {
+        const row = Math.floor(i / 5);
+        const col = i % 5;
+        alien.x = 60 + col * 100;
+        alien.y = 40 + row * 50;
+        alien.alive = true;
+      });
+    }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft') {
-    player.moveLeft = true;
-  }
-  if (e.key === 'ArrowRight') {
-    player.moveRight = true;
-  }
-  if (e.key === ' ') {
-    bullets.push({
-      x: player.x + player.width / 2,
-      y: player.y,
-      width: 5,
-      height: 10,
-      speed: 7,
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        player.moveLeft = true;
+      }
+      if (e.key === 'ArrowRight') {
+        player.moveRight = true;
+      }
+      if (e.key === ' ') {
+        bullets.push({
+          x: player.x + player.width / 2,
+          y: player.y,
+          width: 5,
+          height: 10,
+          speed: 7,
+        });
+      }
     });
-  }
-});
 
-document.addEventListener('keyup', (e) => {
-  if (e.key === 'ArrowLeft') {
-    player.moveLeft = false;
-  }
-  if (e.key === 'ArrowRight') {
-    player.moveRight = false;
-  }
-});
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft') {
+        player.moveLeft = false;
+      }
+      if (e.key === 'ArrowRight') {
+        player.moveRight = false;
+      }
+    });
 
-gameLoop();
+    gameLoop();
 
-</script>
+  </script>
 </body>
+
 </html>
